@@ -2,7 +2,7 @@ const w : number = window.innerWidth
  const h : number = window.innerHeight 
 const parts : number = 4 
 const scGap : number = 0.02 / parts 
-const sizeFactor : number = 8.9 
+const sizeFactor : number = 4.9
 const strokeFactor : number = 90 
 const colors : Array<string> = [
     "#F44336",
@@ -32,13 +32,17 @@ class ScaleUtil {
 class DrawingUtil {
 
     static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        if (x1 == x2 && y1 == y2) {
+            return
+        }
         context.beginPath()
         context.moveTo(x1, y1)
-        context.lineTo(x1, y1)
+        context.lineTo(x2, y2)
         context.stroke()
     }
 
     static drawSlopeDownFill(context : CanvasRenderingContext2D, sf4 : number, x : number, y : number, offset : number) {
+        context.save()
         context.beginPath()
         context.moveTo(0, 0)
         context.lineTo(offset, y)
@@ -49,6 +53,7 @@ class DrawingUtil {
         context.lineTo(0, 0)
         context.clip()
         context.fillRect(0, 0, w * sf4, h)
+        context.restore()
     }
 
     static drawSlopeDown(context : CanvasRenderingContext2D, scale : number) {
@@ -63,9 +68,11 @@ class DrawingUtil {
         DrawingUtil.drawLine(context, 0, 0, offset * sf1, y * sf1)
         DrawingUtil.drawLine(context, offset, y, offset + (x - offset) * sf2, y)
         DrawingUtil.drawLine(context, x, y, x + (w - x) * sf3, y - y * sf3)
+        DrawingUtil.drawSlopeDownFill(context, sf4, x, y, offset)
     }
 
     static drawSDFNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        console.log("node", i, scale)
         context.lineCap = 'round'
         context.lineWidth = Math.min(w, h) / strokeFactor 
         context.strokeStyle = colors[i]
