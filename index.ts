@@ -1,5 +1,5 @@
 const w : number = window.innerWidth 
-const h : number = window.innerHeight 
+ const h : number = window.innerHeight 
 const parts : number = 4 
 const scGap : number = 0.02 / parts 
 const sizeFactor : number = 8.9 
@@ -146,5 +146,47 @@ class Animator {
             this.animated = false 
             clearInterval(this.interval)
         }
+    }
+}
+
+class SDFNode {
+
+    state : State = new State()
+    prev : SDFNode 
+    next : SDFNode 
+
+    constructor(private i : number) {
+        this.addNeighbor()
+    }
+
+    addNeighbor() {
+        if (this.i < colors.length - 1) {
+            this.next = new SDFNode(this.i + 1)
+            this.next.prev = this 
+        }
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        DrawingUtil.drawSDFNode(context, this.i, this.state.scale)
+    }
+
+    update(cb : Function) {
+        this.state.update(cb)
+    }
+
+    startUpdating(cb : Function) {
+        this.state.startUpdating(cb)
+    }
+
+    getNext(dir : number, cb : Function) : SDFNode {
+        var curr : SDFNode = this.prev 
+        if (dir == 1) {
+            curr = this.next 
+        }
+        if (curr) {
+            return curr 
+        }
+        cb()
+        return this 
     }
 }
