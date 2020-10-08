@@ -213,3 +213,25 @@ class SlopeDown {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    sd : SlopeDown = new SlopeDown()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.sd.draw(context)
+    } 
+
+    handleTap(cb : Function) {
+        this.sd.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.sd.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
